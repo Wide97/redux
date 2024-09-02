@@ -1,10 +1,12 @@
-import { useState } from "react";
-import { Container, Row, Col, Form } from "react-bootstrap";
-import Job from "./Job";
+import { useDispatch } from 'react-redux'; 
+import { useState } from 'react';
+import { Container, Row, Col, Form } from 'react-bootstrap';
+import Job from './Job';
 
 const MainSearch = () => {
   const [query, setQuery] = useState("");
   const [jobs, setJobs] = useState([]);
+  const dispatch = useDispatch(); 
 
   const baseEndpoint = "https://strive-benchmark.herokuapp.com/api/jobs?search=";
 
@@ -14,7 +16,6 @@ const MainSearch = () => {
 
   const handleSubmit = async e => {
     e.preventDefault();
-
     try {
       const response = await fetch(baseEndpoint + query + "&limit=20");
       if (response.ok) {
@@ -26,6 +27,10 @@ const MainSearch = () => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleAddToFavourites = (job) => {
+    dispatch({ type: 'ADD_FAVOURITE', payload: job });
   };
 
   return (
@@ -41,7 +46,10 @@ const MainSearch = () => {
         </Col>
         <Col xs={10} className="mx-auto mb-5">
           {jobs.map(jobData => (
-            <Job key={jobData._id} data={jobData} />
+            <Row key={jobData._id} className="mb-2">
+              <Job data={jobData} />
+              <button onClick={() => handleAddToFavourites(jobData)}>Add to Favourites</button>
+            </Row>
           ))}
         </Col>
       </Row>
